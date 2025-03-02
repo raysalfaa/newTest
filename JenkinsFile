@@ -1,7 +1,7 @@
 pipeline {
     agent any
     environment {
-        REPO_URL = 'https://github.com/raysalfaa/assesment.git'  // Replace with your repository URL
+        REPO_URL = 'https://github.com/raysalfaa/newTest.git'  // Replace with your repository URL
     }
     stages {
         stage('Checkout') {
