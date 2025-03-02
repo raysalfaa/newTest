@@ -2,9 +2,9 @@ pipeline {
     agent any
     environment {
         REPO_URL = 'https://github.com/raysalfaa/newTest.git'  // Global env variable
-        branchName = env.GIT_BRANCH
-        sourceBranch = env.CHANGE_BRANCH  // Source branch
-        baseBranch = env.CHANGE_TARGET   // Base branch
+        def branchName = env.GIT_BRANCH
+        def sourceBranch = env.CHANGE_BRANCH  // Source branch
+        def baseBranch = env.CHANGE_TARGET   // Base branch
 
     }
     stages {
