@@ -28,19 +28,19 @@ pipeline {
             steps {
                 script {
                     if (env.CHANGE_ID) {  // If it's a PR
-                        if (env.TARGET_BRANCH == "prod" || env.TARGET_BRANCH == "stag") {
-                            echo "Skipping build. PR is targeting '${env.TARGET_BRANCH}'"
+                        if (env.CHANGE_TARGET == "prod" || env.CHANGE_TARGET == "stag") {
+                            echo "Skipping build. PR is targeting '${env.CHANGE_TARGET}'"
                             currentBuild.result = 'ABORTED'
                             error("Build skipped: PR is not targeting 'dev'.")
-                        } else if (env.TARGET_BRANCH == "dev") {
+                        } else if (env.CHANGE_TARGET == "dev") {
                             echo "PR targeting 'dev' - Proceeding with the build."
                         } else {
-                            echo "Skipping build: Unknown target branch '${env.TARGET_BRANCH}'."
+                            echo "Skipping build: Unknown target branch '${env.CHANGE_TARGET}'."
                             currentBuild.result = 'ABORTED'
                             error("Build skipped: Target branch is not recognized.")
                         }
                     } else {
-                        echo "Regular push to ${env.CURRENT_BRANCH} - Proceeding."
+                        echo "Regular push to ${env.CHANGE_BRANCH} - Proceeding."
                     }
                 }
             }
@@ -49,7 +49,7 @@ pipeline {
         stage('Build') {
             steps {
                 script {
-                    echo "Building code from ${env.SOURCE_BRANCH} -> ${env.TARGET_BRANCH}"
+                    echo "Building code from ${env.CHANGE_BRANCH} -> ${env.CHANGE_TARGET}"
                 }
             }
         }
@@ -57,7 +57,7 @@ pipeline {
         stage('Deploy') {
             steps {
                 script {
-                    echo "Deploying application from ${env.SOURCE_BRANCH} -> ${env.TARGET_BRANCH}"
+                    echo "Deploying application from ${env.CHANGE_BRANCH} -> ${env.CHANGE_TARGET}"
                 }
             }
         }
