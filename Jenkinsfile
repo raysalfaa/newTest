@@ -4,6 +4,7 @@ pipeline {
         REPO_URL = 'https://github.com/raysalfaa/newTest.git'  // Global env variable
         SONARQUBE_URL = 'http://localhost:9000'
         sonarHome=tool 'sonarQubeScanner'
+        RECIPIENTS = 'redeyesinbg@gmail.com'
         
     }
     stages {
@@ -82,10 +83,53 @@ pipeline {
 
     post {
         failure {
-            echo "Build failed!"
+            script {
+                emailext (
+                    subject: "Jenkins Build Failed: ${env.JOB_NAME} #${env.BUILD_NUMBER}",
+                    body: """
+                    Hi Team,
+
+                    The Jenkins build '${env.JOB_NAME} #${env.BUILD_NUMBER}' has failed.
+
+                    **Possible Reasons:**
+                    - Code Quality Issues
+                    - Test Failures
+                    - Build Errors
+
+                    **Logs:** ${env.BUILD_URL}/console
+
+                    Regards,  
+                    Jenkins CI
+                    """,
+                    to: RECIPIENTS
+                )
+                echo "Pipelining done"
+            }
         }
-        aborted {
-            echo "Build was skipped because target branch is not 'dev'."
+        aborted{
+            cript {
+                emailext (
+                    subject: "Jenkins Build aborted: ${env.JOB_NAME} #${env.BUILD_NUMBER}",
+                    body: """
+                    Hi Team,
+
+                    The Jenkins build '${env.JOB_NAME} #${env.BUILD_NUMBER}' has been aborted.
+
+                    **Possible Reasons:**
+                    - Code Quality Issues
+                    - Test Failures
+                    - Build Errors
+                    -Pr is not targeting 'dev' branch .
+
+                    **Logs:** ${env.BUILD_URL}/console
+
+                    Regards,  
+                    Jenkins CI
+                    """,
+                    to: RECIPIENTS
+                )
+                echo "Pipelining done"
+            }
         }
     }
 }
