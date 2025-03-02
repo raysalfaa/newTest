@@ -19,7 +19,6 @@ pipeline {
                     } else {
                         echo "Reposatory name: ${REPO_URL}"
                         echo "Regular Build - Branch: ${branchName}"
-
                     }
                 }
             }
