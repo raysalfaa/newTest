@@ -107,7 +107,7 @@ pipeline {
             }
         }
         aborted{
-            cript {
+            script {
                 emailext (
                     subject: "Jenkins Build aborted: ${env.JOB_NAME} #${env.BUILD_NUMBER}",
                     body: """
