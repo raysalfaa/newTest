@@ -2,6 +2,8 @@ pipeline {
     agent any
     environment {
         REPO_URL = 'https://github.com/raysalfaa/newTest.git'  // Global env variable
+        SONARQUBE_URL = 'http://localhost:9000'
+        sonarHome=tool 'sonarQubeScanner'
         
     }
     stages {
@@ -42,6 +44,21 @@ pipeline {
                     } else {
                         echo "Regular push to ${env.CHANGE_BRANCH} - Proceeding."
                     }
+                }
+            }
+        }
+        stage('SonarQube Analysis') {
+            steps {
+                
+                withSonarQubeEnv('sonarQube') {
+                    sh '''
+                    ${sonarHome}/bin/sonar-scanner \
+                        -Dsonar.projectKey=jenkinscanner \
+                        -Dsonar.sources=. \
+                        -Dsonar.language=py \
+                        -Dsonar.python.version=3 \
+                        -Dsonar.host.url=$SONARQUBE_URL
+                    '''
                 }
             }
         }
