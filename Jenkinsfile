@@ -6,6 +6,7 @@ pipeline {
         sonarHome=tool 'sonarQubeScanner'
         RECIPIENTS = 'redeyesinbg@gmail.com'
         
+        
     }
     stages {
         stage('Pull Request') {
