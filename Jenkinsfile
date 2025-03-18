@@ -68,6 +68,7 @@ pipeline {
         stage('Build') {
             steps {
                 script {
+                    build '../other-repo/env.CHANGE_BRANCH'
                     echo "Building code from ${env.CHANGE_BRANCH} -> ${env.CHANGE_TARGET}"
                 }
             }
