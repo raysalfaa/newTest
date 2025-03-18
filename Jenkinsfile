@@ -68,7 +68,7 @@ pipeline {
         stage('Build') {
             steps {
                 script {
-                    build env.CHANGE_BRANCH
+                    build env.GIT_BRANCH
                     echo "Building code from ${env.CHANGE_BRANCH} -> ${env.CHANGE_TARGET}"
                 }
             }
