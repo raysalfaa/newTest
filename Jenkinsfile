@@ -68,7 +68,7 @@ pipeline {
             steps {
                 script {
                     def qg = waitForQualityGate()
-                    if (qg.status != 'OK') {
+                    if (qg.status = 'OK') {
                         error "Pipeline failed due to quality gate failure: ${qg.status}"
                     }
                 }
