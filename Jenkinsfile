@@ -7,7 +7,9 @@ pipeline {
         RECIPIENTS = 'redeyesinbg@gmail.com'
         
     }
-    stage('Validate PR') {
+    
+    stages {
+        stage('Validate PR') {
             steps {
                 script {
                     if (env.CHANGE_ID) {  // If it's a PR
@@ -28,7 +30,6 @@ pipeline {
                 }
             }
         }
-    stages {
         stage('Pull Request') {
             steps {
                 script {
