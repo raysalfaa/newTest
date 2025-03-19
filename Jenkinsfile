@@ -7,7 +7,6 @@ pipeline {
         RECIPIENTS = 'redeyesinbg@gmail.com'
         
     }
-    
     stages {
         stage('Validate PR') {
             steps {
