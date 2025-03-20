@@ -22,16 +22,12 @@ pipeline {
         //         }
         //     }
         // }
-         when {
-                    expression {
-                        return env.CHANGE_ID && (env.CHANGE_TARGET =='dev')
-                    }
-            }
+       
 
         stage('Pull Request') {
-            when {
+            when (env.CHANGE_ID && (env.CHANGE_TARGET =='dev')) {
                     expression {
-                        return env.CHANGE_ID && (env.CHANGE_TARGET =='dev')
+                         error ("Build scipped")
                     }
                 }
             steps {
