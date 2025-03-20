@@ -11,7 +11,7 @@ pipeline {
         stage('Validate PR') {
             when {
                 expression {
-                    return env.CHANGE_ID && (env.CHANGE_TARGET != 'dev')
+                    return env.CHANGE_ID && (env.CHANGE_TARGET == 'dev')
                 }
             }
             steps {
