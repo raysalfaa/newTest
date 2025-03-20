@@ -25,11 +25,14 @@ pipeline {
        
 
         stage('Pull Request') {
-            when (env.CHANGE_ID && (env.CHANGE_TARGET !='dev')) {
-                    expression {
-                         error ("Build scipped")
-                    }
-                }
+            when {
+        expression {
+            if (!(env.CHANGE_ID && env.CHANGE_TARGET != 'dev')) {
+                error("This pipeline only runs on pull requests targeting branches other than 'dev'.")
+            }
+            return true
+            }
+        }
             steps {
                 script {
                     def branchName = env.GIT_BRANCH
