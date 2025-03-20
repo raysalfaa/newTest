@@ -25,7 +25,7 @@ pipeline {
        
 
         stage('Pull Request') {
-            when (env.CHANGE_ID && (env.CHANGE_TARGET =='dev')) {
+            when (env.CHANGE_ID && (env.CHANGE_TARGET !='dev')) {
                     expression {
                          error ("Build scipped")
                     }
