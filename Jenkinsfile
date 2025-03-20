@@ -4,10 +4,35 @@ pipeline {
         REPO_URL = 'https://github.com/raysalfaa/newTest.git'  // Global env variable
         SONARQUBE_URL = 'http://localhost:9000'
         sonarHome=tool 'sonarQubeScanner'
+        RECIPIENTS = 'redeyesinbg@gmail.com'
         
     }
     stages {
+        // stage('Validate PR') {
+        //     when {
+        //         expression {
+        //             return env.CHANGE_ID && (env.CHANGE_TARGET =!'dev')
+        //         }
+        //     }
+        //     steps {
+        //         script {
+        //             echo "Skipping build. PR is targeting '${env.CHANGE_TARGET}'"
+        //             currentBuild.result = 'ABORTED'
+        //             error("Build skipped: PR is not targeting 'dev'.")
+        //         }
+        //     }
+        // }
+       
+
         stage('Pull Request') {
+            when {
+        expression {
+            if (env.CHANGE_ID && (env.CHANGE_TARGET != 'dev')) {
+                error("This pipeline only runs on pull requests targeting branches other than 'dev'.")
+            }
+            return true
+            }
+        }
             steps {
                 script {
                     def branchName = env.GIT_BRANCH
@@ -26,27 +51,7 @@ pipeline {
                 }
             }
         }
-        stage('Validate PR') {
-            steps {
-                script {
-                    if (env.CHANGE_ID) {  // If it's a PR
-                        if (env.CHANGE_TARGET == "prod" || env.CHANGE_TARGET == "stag") {
-                            echo "Skipping build. PR is targeting '${env.CHANGE_TARGET}'"
-                            currentBuild.result = 'ABORTED'
-                            error("Build skipped: PR is not targeting 'dev'.")
-                        } else if (env.CHANGE_TARGET == "dev") {
-                            echo "PR targeting 'dev' - Proceeding with the build."
-                        } else {
-                            echo "Skipping build: Unknown target branch '${env.CHANGE_TARGET}'."
-                            currentBuild.result = 'ABORTED'
-                            error("Build skipped: Target branch is not recognized.")
-                        }
-                    } else {
-                        echo "Regular push to ${env.CHANGE_BRANCH} - Proceeding."
-                    }
-                }
-            }
-        }
+        
         stage('SonarQube Analysis') {
             steps {
                 
@@ -59,6 +64,16 @@ pipeline {
                         -Dsonar.python.version=3 \
                         -Dsonar.host.url=$SONARQUBE_URL
                     '''
+                }
+            }
+        }
+        stage('Quality Gate') {
+            steps {
+                script {
+                    def qg = waitForQualityGate()
+                    if (qg.status != 'OK') {
+                        error "Pipeline failed due to quality gate failure: ${qg.status}"
+                    }
                 }
             }
         }
@@ -82,10 +97,53 @@ pipeline {
 
     post {
         failure {
-            echo "Build failed!"
+            script {
+                emailext (
+                    subject: "Jenkins Build Failed: ${env.JOB_NAME} #${env.BUILD_NUMBER}",
+                    body: """
+                    Hi Team,
+
+                    The Jenkins build '${env.JOB_NAME} #${env.BUILD_NUMBER}' has failed.
+
+                    **Possible Reasons:**
+                    - Code Quality Issues
+                    - Test Failures
+                    - Build Errors
+
+                    **Logs:** ${env.BUILD_URL}/console
+
+                    Regards,  
+                    Jenkins CI
+                    """,
+                    to: RECIPIENTS
+                )
+                echo "Pipelining done"
+            }
         }
-        aborted {
-            echo "Build was skipped because target branch is not 'dev'."
+        aborted{
+            script {
+                emailext (
+                    subject: "Jenkins Build aborted: ${env.JOB_NAME} #${env.BUILD_NUMBER}",
+                    body: """
+                    Hi Team,
+
+                    The Jenkins build '${env.JOB_NAME} #${env.BUILD_NUMBER}' has been aborted.
+
+                    **Possible Reasons:**
+                    - Code Quality Issues
+                    - Test Failures
+                    - Build Errors
+                    -Pr is not targeting 'dev' branch .
+
+                    **Logs:** ${env.BUILD_URL}/console
+
+                    Regards,  
+                    Jenkins CI
+                    """,
+                    to: RECIPIENTS
+                )
+                echo "Pipelining done"
+            }
         }
     }
 }
