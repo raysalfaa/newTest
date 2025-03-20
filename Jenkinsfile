@@ -8,23 +8,28 @@ pipeline {
         
     }
     stages {
-        stage('Validate PR') {
-            when {
-                expression {
-                    return env.CHANGE_ID && (env.CHANGE_TARGET == 'dev')
-                }
-            }
-            steps {
-                script {
-                    echo "Skipping build. PR is targeting '${env.CHANGE_TARGET}'"
-                    currentBuild.result = 'ABORTED'
-                    error("Build skipped: PR is not targeting 'dev'.")
-                }
-            }
-        }
+        // stage('Validate PR') {
+        //     when {
+        //         expression {
+        //             return env.CHANGE_ID && (env.CHANGE_TARGET =!'dev')
+        //         }
+        //     }
+        //     steps {
+        //         script {
+        //             echo "Skipping build. PR is targeting '${env.CHANGE_TARGET}'"
+        //             currentBuild.result = 'ABORTED'
+        //             error("Build skipped: PR is not targeting 'dev'.")
+        //         }
+        //     }
+        // }
 
         stage('Pull Request') {
             steps {
+                when {
+                    expression {
+                        return env.CHANGE_ID && (env.CHANGE_TARGET =!'dev')
+                    }
+                }
                 script {
                     def branchName = env.GIT_BRANCH
                     def sourceBranch = env.CHANGE_BRANCH  // Source branch
