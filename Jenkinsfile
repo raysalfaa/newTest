@@ -24,12 +24,12 @@ pipeline {
         // }
 
         stage('Pull Request') {
-            steps {
-                when {
+            when {
                     expression {
                         return env.CHANGE_ID && (env.CHANGE_TARGET =!'dev')
                     }
                 }
+            steps {
                 script {
                     def branchName = env.GIT_BRANCH
                     def sourceBranch = env.CHANGE_BRANCH  // Source branch
