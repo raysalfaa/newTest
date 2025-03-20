@@ -26,7 +26,7 @@ pipeline {
         stage('Pull Request') {
             when {
                     expression {
-                        return env.CHANGE_ID && (env.CHANGE_TARGET =!'dev')
+                        return env.CHANGE_ID && (env.CHANGE_TARGET =='dev')
                     }
                 }
             steps {
