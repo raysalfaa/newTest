@@ -22,6 +22,11 @@ pipeline {
         //         }
         //     }
         // }
+         when {
+                    expression {
+                        return env.CHANGE_ID && (env.CHANGE_TARGET =='dev')
+                    }
+            }
 
         stage('Pull Request') {
             when {
