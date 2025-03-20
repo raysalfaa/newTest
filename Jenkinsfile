@@ -29,7 +29,6 @@ pipeline {
         //         }
         //     }
         // }
-        stages {
         stage('Validate PR') {
             when {
                 expression {
